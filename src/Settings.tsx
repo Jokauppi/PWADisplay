@@ -73,6 +73,25 @@ function Settings({ open, setOpen, device, setDevice }: ownProps) {
             <div className="flex flex-row justify-between">
               <ModeToggle />
             </div>
+            <div className="flex flex-row justify-between text-xs text-neutral-500">
+              <p>
+                Lincensed under the{" "}
+                <a
+                  href="https://github.com/Jokauppi/PWADisplay/blob/main/LICENSE"
+                  className="hover:text-white underline"
+                  target="_blank"
+                >
+                  MIT License
+                </a>
+              </p>
+              <a
+                href="https://github.com/Jokauppi/PWADisplay"
+                className="hover:text-white underline"
+                target="_blank"
+              >
+                Contribute
+              </a>
+            </div>
           </div>
         </DialogContent>
       </Dialog>

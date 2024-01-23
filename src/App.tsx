@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react"
+import { ThemeProvider } from "@/components/theme-provider"
+import Settings from "./Settings"
 
 function App() {
-  const [chosenDevice, setChosenDevice] = useState("")
-  const [availableDevices, setAvailableDevices] = useState([""])
-  const [hide, setHide] = useState(true)
+  const [device, setDevice] = useState<MediaDeviceInfo>({} as MediaDeviceInfo)
+  const [openSources, setOpenSources] = useState(false)
 
   const capture = () => {
     navigator.mediaDevices
@@ -21,55 +22,32 @@ function App() {
       })
   }
 
-  useEffect(() => {
-    const getDeviceIds = async () => {
-      const videoDevices = await navigator.mediaDevices
-        .enumerateDevices()
-        .then(devices => devices.filter(device => device.kind == "videoinput"))
-        .then(devices => devices.map(device => device.deviceId))
-        .then(devices => devices.sort())
-
-      setAvailableDevices(videoDevices)
-    }
-    getDeviceIds()
-  }, [])
-
   const constraints = {
     audio: false,
     video: {
-      deviceId: chosenDevice,
+      deviceId: device.deviceId,
     },
   }
 
   useEffect(() => {
     capture()
-  }, [])
+  }, [device])
 
   return (
-    <div
-      className={`App h-dvh flex flex-row justify-center space-x-8 bg-black text-white`}
-      onClick={() => setHide(!hide)}
-    >
-      <video autoPlay playsInline></video>
-      <div className={`h-full ${hide ? "hidden" : "absolute"} top-6`}>
-        <div className="flex flex-col space-y-2">
-          {availableDevices.map((device, id) => {
-            return (
-              <button
-                key={id}
-                className="p-2 rounded-md focus:bg-neutral-400 bg-neutral-800"
-                onClick={() => {
-                  setChosenDevice(device)
-                  capture()
-                }}
-              >
-                Cam {id}
-              </button>
-            )
-          })}
-        </div>
+    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+      <div
+        className={`App h-dvh flex flex-row justify-center space-x-8 bg-background text-white`}
+        onClick={() => setOpenSources(!openSources)}
+      >
+        <video autoPlay playsInline></video>
+        <Settings
+          open={openSources}
+          setOpen={setOpenSources}
+          device={device}
+          setDevice={setDevice}
+        />
       </div>
-    </div>
+    </ThemeProvider>
   )
 }
 

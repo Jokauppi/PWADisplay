@@ -42,7 +42,7 @@ export default defineConfig({
       },
     }),
   ],
-  base: "/pwadisplay/",
+  base: "/PWADisplay/",
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

@@ -16,15 +16,18 @@ import {
 import { ModeToggle } from "./components/mode-toggle"
 import { prop, sortBy } from "ramda"
 import { useState } from "react"
+import { useAtom } from "jotai"
+import { deviceAtom, settingsAtom } from "./App"
+import { Input } from "./components/ui/input"
 
 type ownProps = {
   open: boolean
   setOpen: (open: boolean) => void
-  device: MediaDeviceInfo
-  setDevice: (device: MediaDeviceInfo) => void
 }
 
-function Settings({ open, setOpen, device, setDevice }: ownProps) {
+function Settings({ open, setOpen }: ownProps) {
+  const [device, setDevice] = useAtom(deviceAtom)
+  const [settings, setSettings] = useAtom(settingsAtom)
   const [devices, setDevices] = useState<MediaDeviceInfo[]>([])
 
   const getDevices = async () => {
@@ -58,22 +61,64 @@ function Settings({ open, setOpen, device, setDevice }: ownProps) {
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col space-y-4">
-            <Select value={device.deviceId} onValueChange={changeDevice}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder={device.label || "Choose Source"} />
-              </SelectTrigger>
-              <SelectContent>
-                {devices.map((device: MediaDeviceInfo) => (
-                  <SelectItem value={device.deviceId}>
-                    {device.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <div className="flex flex-row justify-between">
+            <div className="flex flex-row space-x-2 justify-between">
               <ModeToggle />
+              <Select value={device.deviceId} onValueChange={changeDevice}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder={device.label || "Choose Source"} />
+                </SelectTrigger>
+                <SelectContent>
+                  {devices.map((device: MediaDeviceInfo) => (
+                    <SelectItem value={device.deviceId}>
+                      {device.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
-            <div className="flex flex-row justify-between text-xs text-neutral-500">
+            <div className="flex flex-row justify-between space-x-2 items-end">
+              <div className="flex flex-col space-y-1">
+                <label
+                  htmlFor="width"
+                  className="text-sm text-neutral-700 dark:text-neutral-300"
+                >
+                  Width
+                </label>
+                <Input
+                  type="number"
+                  id="width"
+                  value={settings.width}
+                  className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  onChange={e =>
+                    setSettings({
+                      ...settings,
+                      width: parseInt(e.target.value),
+                    })
+                  }
+                />
+              </div>
+              <div className="flex flex-col space-y-1">
+                <label
+                  htmlFor="height"
+                  className="text-sm text-neutral-700 dark:text-neutral-300"
+                >
+                  Height
+                </label>
+                <Input
+                  type="number"
+                  id="height"
+                  value={settings.height}
+                  className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  onChange={e =>
+                    setSettings({
+                      ...settings,
+                      height: parseInt(e.target.value),
+                    })
+                  }
+                />
+              </div>
+            </div>
+            <div className="flex flex-row justify-between text-xs text-neutral-500 dark:text-neutral-300">
               <p>
                 Lincensed under the{" "}
                 <a

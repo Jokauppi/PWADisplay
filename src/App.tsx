@@ -1,9 +1,22 @@
 import { useEffect, useState } from "react"
 import { ThemeProvider } from "@/components/theme-provider"
 import Settings from "./Settings"
+import { atom, useAtomValue } from "jotai"
+
+type Settings = {
+  width: number
+  height: number
+}
+
+export const deviceAtom = atom<MediaDeviceInfo>({} as MediaDeviceInfo)
+export const settingsAtom = atom<Settings>({
+  width: 1920,
+  height: 1080,
+})
 
 function App() {
-  const [device, setDevice] = useState<MediaDeviceInfo>({} as MediaDeviceInfo)
+  const device = useAtomValue(deviceAtom)
+  const settings = useAtomValue(settingsAtom)
   const [openSources, setOpenSources] = useState(false)
 
   const capture = () => {
@@ -26,12 +39,14 @@ function App() {
     audio: false,
     video: {
       deviceId: device.deviceId,
+      width: { ideal: settings.width },
+      height: { ideal: settings.height },
     },
   }
 
   useEffect(() => {
     capture()
-  }, [device])
+  }, [device, settings])
 
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
@@ -39,13 +54,8 @@ function App() {
         className={`App h-dvh flex flex-row justify-center space-x-8 bg-background text-white`}
         onClick={() => setOpenSources(!openSources)}
       >
-        <video autoPlay playsInline></video>
-        <Settings
-          open={openSources}
-          setOpen={setOpenSources}
-          device={device}
-          setDevice={setDevice}
-        />
+        <video autoPlay playsInline width="1920" height="1080"></video>
+        <Settings open={openSources} setOpen={setOpenSources} />
       </div>
     </ThemeProvider>
   )
